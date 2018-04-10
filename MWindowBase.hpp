@@ -1112,6 +1112,7 @@ MWindowBase::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         else
         {
+            // for DECLARE_DYNAMIC/IMPLEMENT_DYNAMIC
             TCHAR szClass[128];
             GetClassName(hwnd, szClass, _countof(szClass));
 
