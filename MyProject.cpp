@@ -3,9 +3,9 @@
 class MyWindowClass : public MWindowBase
 {
 public:
-    HBRUSH m_hbr;
+    DECLARE_DYNAMIC(MyWindowClass);
 
-    MyWindowClass() : m_hbr(CreateSolidBrush(RGB(255, 0, 0)))
+    MyWindowClass()
     {
     }
 
@@ -26,7 +26,8 @@ public:
 
     virtual VOID ModifyWndClassDx(WNDCLASSEX& wcx)
     {
-        wcx.hbrBackground = m_hbr;
+        static HBRUSH hbr = CreateSolidBrush(RGB(255, 0, 0));
+        wcx.hbrBackground = hbr;
     }
 
     BOOL OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
@@ -45,6 +46,7 @@ public:
         }
     }
 };
+IMPLEMENT_DYNAMIC(MyWindowClass);
 
 void OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
