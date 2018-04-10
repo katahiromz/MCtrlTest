@@ -159,12 +159,13 @@ protected:
 public:
     HWND m_hwnd;
     WNDPROC m_fnOldProc;
+    bool m_bDynamicCreated;
 
-    MWindowBase() : m_hwnd(NULL), m_fnOldProc(NULL)
+    MWindowBase() : m_hwnd(NULL), m_fnOldProc(NULL), m_bDynamicCreated(false)
     {
     }
 
-    MWindowBase(HWND hwnd) : m_hwnd(hwnd), m_fnOldProc(NULL)
+    MWindowBase(HWND hwnd) : m_hwnd(hwnd), m_fnOldProc(NULL), m_bDynamicCreated(false)
     {
     }
 
@@ -224,7 +225,7 @@ public:
     {
         SetUserData(m_hwnd, NULL);
         m_hwnd = NULL;
-        if (IsDynamicCreate())
+        if (m_bDynamicCreated)
         {
             delete this;
         }
@@ -551,22 +552,13 @@ public:
         static class_to_create_map_t s_class_to_create_map;
         return s_class_to_create_map;
     }
-
-    virtual bool IsDynamicCreate() const
-    {
-        return false;
-    }
 };
 
 //////////////////////////////////////////////////////////////////////////////
 // DECLARE_DYNAMIC/IMPLEMENT_DYNAMIC
 
 #define DECLARE_DYNAMIC(class_name) \
-    static MWindowBase *CreateInstanceDx(); \
-    virtual bool IsDynamicCreate() const \
-    { \
-        return true; \
-    }
+    static MWindowBase *CreateInstanceDx();
 
 #define IMPLEMENT_DYNAMIC(class_name) \
     /*static*/ MWindowBase *class_name::CreateInstanceDx() \
@@ -1132,6 +1124,7 @@ MWindowBase::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
 
             base = (*it->second)();
+            base->m_bDynamicCreated = true;
         }
         base->m_hwnd = hwnd;
     }
